@@ -1,1 +1,9 @@
 ---
+master_host: servera.example.com
+docker_version: 1.13.1
+docker_device: /dev/sdb
+docker_device_mount_path: /var/lib/docker
+docker_lv_size: 100%FREE
+docker_lv_name: docker-pool
+docker_vg_name: docker-vg
+wipe_signatures: true

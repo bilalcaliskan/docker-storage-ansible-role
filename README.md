@@ -1,4 +1,4 @@
-Docker Role
+Docker Storage Role For Openshift
 =========
 
 A brief description of the role goes here.

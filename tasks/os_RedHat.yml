@@ -1,9 +1,50 @@
 ---
 
-- name: include install docker task
-  import_tasks: os_RedHat_install_docker.yml
-  tags: docker
+- name: Ensure docker is installed
+  yum:
+    name: docker-{{ docker_version }}
+    state: present
 
-- name: include post installation task
-  import_tasks: os_RedHat_post_install.yml
-  tags: docker
+- name: Ensure docker service is not running
+  service:
+    name: docker
+    state: stopped
+
+- name: Update docker configuration
+  replace:
+    path: /etc/sysconfig/docker
+    regexp: 'OPTIONS=.*'
+    replace: 'OPTIONS="--insecure-registry=172.30.0.0/16 --selinux-enabled"'
+    backup: yes
+
+- name: Check if additional docker device exists
+  stat:
+    path: "{{ docker_device }}"
+  register: docker_device_result
+
+- name: Fail if docker device does not exists
+  fail:
+    msg: "Whoops! Docker disk must be added to continue!"
+  when: docker_device_result.stat.exists == False
+
+- name: Copy template file to the remote host
+  template:
+    src: docker-storage-setup.j2
+    dest: /etc/sysconfig/docker-storage-setup
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+- name: Run docker-storage-setup script
+  command: docker-storage-setup
+  register: docker_storage_setup_result
+
+- name: Copy configuration files to the remote hosts
+  copy:
+    src: "{{ item.src_path }}"
+    dest: "{{ item.dest_path }}"
+  loop:
+    - { src_path: "daemon.json", dest_path: "/etc/docker/" }
+  when: docker_storage_setup_result.rc == 0
+  notify: restart and enable docker

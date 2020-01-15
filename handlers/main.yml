@@ -1,9 +1,7 @@
 ---
 
-- name: include handler for RedHat based hosts
-  include: os_RedHat.yml
-  when: ansible_facts['os_family'] == "RedHat"
-
-- name: include handler for Debian based hosts
-  include: os_Debian.yml
-  when: ansible_facts['os_family'] == "Debian"
+- name: restart and enable docker
+  service:
+    name: docker
+    state: restarted
+    enabled: yes

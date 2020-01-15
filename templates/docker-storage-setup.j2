@@ -1,0 +1,8 @@
+DEVS={{ docker_device }}
+VG={{ docker_vg_name }}
+DATA_SIZE=95%VG
+STORAGE_DRIVER=overlay2
+CONTAINER_ROOT_LV_NAME={{ docker_lv_name }}
+CONTAINER_ROOT_LV_MOUNT_PATH={{ docker_device_mount_path }}
+CONTAINER_ROOT_LV_SIZE={{ docker_lv_size }}
+WIPE_SIGNATURES={{ wipe_signatures }}
